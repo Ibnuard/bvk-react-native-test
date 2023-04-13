@@ -8,15 +8,25 @@ import {
 } from 'react-native';
 import {useApi} from './src/hooks/hookApi';
 import {Colors, Scaler, Size, Typo} from './src/styles';
-import {ExpandableView} from './src/components';
+import {ExpandableView, SearchBar} from './src/components';
 
 const App = () => {
-  const [catList, setCatList] = React.useState<any>([]);
+  const [catList, setCatList] = React.useState<string[]>([]);
   const [offset, setOffset] = React.useState<number>(0);
-  const [catPaginationData, setCatPaginationData] = React.useState<any>([]);
+  const [catPaginationData, setCatPaginationData] = React.useState<String[]>(
+    [],
+  );
   const [isOnLoadMore, setIsOnLoadMore] = React.useState<boolean>(false);
   const [isEndList, setIsEndList] = React.useState<Boolean>(false);
+  const [search, setSearch] = React.useState<string>('');
 
+  // === Define type
+  type TCatData = {
+    name: string;
+    description: string;
+  };
+
+  // === fetch cat list api
   const getApiData = async () => {
     const data = await useApi('https://api.thecatapi.com/v1/breeds');
 
@@ -48,6 +58,13 @@ const App = () => {
     }
   };
 
+  // === function filter by name
+  const searchCat = (data: any[]): string[] => {
+    return data.filter((item: TCatData, index: number) => {
+      return item.name.toLowerCase().includes(search.toLowerCase());
+    });
+  };
+
   // ================
   //
   // ======== GAP ===
@@ -77,10 +94,14 @@ const App = () => {
 
   return (
     <View style={styles.container}>
+      <SearchBar
+        placeholder="Cari nama kucing..."
+        onChangeText={text => setSearch(text)}
+        value={search}
+      />
       <FlatList
-        keyExtractor={({id}) => id}
         contentContainerStyle={styles.listContainer}
-        data={catPaginationData}
+        data={searchCat(catPaginationData)}
         onEndReachedThreshold={0.2}
         onEndReached={addMoreData}
         ListFooterComponent={_renderListFooter}

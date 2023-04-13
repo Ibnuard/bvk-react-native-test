@@ -1,4 +1,5 @@
 import ExpandableView from './expandable';
 import Touchable from './touchable';
+import SearchBar from './searchbar';
 
-export {ExpandableView, Touchable};
+export {ExpandableView, Touchable, SearchBar};
